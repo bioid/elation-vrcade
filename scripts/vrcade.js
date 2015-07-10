@@ -7,35 +7,31 @@ elation.require([
   //elation.template.add('vrcade.intro', '<div data-elation-component="ui.spinner" data-elation-args.label="loading" data-elation-args.type="dark"></div>');
 
   elation.component.add('vrcade', function() {
-    this.init = function() {
-      this.initEngine();
-
+    this.initLoader = function() {
       this.loader = elation.ui.loader({
         append: this,
         right: true,
         bottom: true
       });
     }
-    this.initEngine = function() {
-      this.engine = elation.engine.create("vrcade", ["physics", "sound", "ai", "world", "render", "controls"], elation.bind(this, this.startEngine));
-    }
-    this.startEngine = function(engine) {
+    this.initWorld = function() {
       elation.require(['engine.things.light', 'engine.things.terrain', 'vrcade.arcadecabinet'], elation.bind(this, function() {
-        engine.systems.world.load({
+        this.initLoader();
+        this.world.load({
           type: 'vrcade',
           name: 'vrcade',
           properties: {
           }
         });
-        this.view = elation.engine.systems.render.view("main", elation.html.create({ tag: 'div', append: document.body }), { fullsize: 1, picking: true, engine: 'vrcade', showstats: true } );
-        this.gameobj = this.engine.systems.world.children.vrcade;
+        //this.view = elation.engine.systems.render.view("main", elation.html.create({ tag: 'div', append: document.body }), { fullsize: 1, picking: true, engine: 'vrcade', showstats: true } );
+        this.gameobj = this.world.children.vrcade;
         this.gameobj.setview(this.view);
         elation.events.add(this.loader, 'ui_loader_finish', elation.bind(this.gameobj, this.gameobj.handleLoaderFinished));
-        engine.start();
+        // engine.start();
       }));
 
     }
-  });
+  }, elation.engine.client);
 
   elation.component.add('engine.things.vrcade', function() {
     this.gamenum = 0;
